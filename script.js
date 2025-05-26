@@ -26,7 +26,10 @@ document.getElementById('chatbot-input').addEventListener('keypress', function (
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ message: userMessage })
+      body: JSON.stringify({ 
+        message: userMessage,
+        session_id: sessionId 
+      })
     })
     .then(res => res.json())
     .then(data => {
