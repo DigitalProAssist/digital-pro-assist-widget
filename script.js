@@ -25,13 +25,11 @@ document.getElementById('chatbot-input').addEventListener('keypress', function (
     .then(res => res.json())
     .then(data => {
       const msg = data.reply;
-      if (msg.includes("[") && msg.includes("](")) {
-        const parts = msg.split(/\[|\]\(|\)/);
-        const formatted = '<a href="' + parts[2] + '" target="_self" style="color:#6746E1;text-decoration:underline;">' + parts[1] + '</a>';
-        appendHTML("bot", formatted);
-      } else {
-        appendMessage("bot", msg);
-      }
+      const markdownToHTML = (text) => {
+  return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_self" style="color:#6746E1;text-decoration:underline;">$1</a>');
+};
+
+appendHTML("bot", markdownToHTML(msg));
     });
   }
 });
