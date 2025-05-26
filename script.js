@@ -1,3 +1,10 @@
+// Generate or retrieve session ID from localStorage
+let sessionId = localStorage.getItem('chatbot_session_id');
+if (!sessionId) {
+  sessionId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
+  localStorage.setItem('chatbot_session_id', sessionId);
+}
+
 document.getElementById('chatbot-toggle').onclick = function () {
   const chatbot = document.getElementById('chatbot-container');
   const notification = document.getElementById('notification-bubble');
