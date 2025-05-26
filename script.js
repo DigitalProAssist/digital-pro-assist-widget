@@ -1,4 +1,3 @@
-
 document.getElementById('chatbot-toggle').onclick = function () {
   const chatbot = document.getElementById('chatbot-container');
   const notification = document.getElementById('notification-bubble');
@@ -26,10 +25,10 @@ document.getElementById('chatbot-input').addEventListener('keypress', function (
     .then(data => {
       const msg = data.reply;
       const markdownToHTML = (text) => {
-  return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_self" style="color:#6746E1;text-decoration:underline;">$1</a>');
-};
-
-appendHTML("bot", markdownToHTML(msg));
+        return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_self" style="color:#6746E1;text-decoration:underline;">$1</a>');
+      };
+      
+      appendHTML("bot", markdownToHTML(msg));
     });
   }
 });
