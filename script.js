@@ -1,62 +1,89 @@
-// Generate or retrieve session ID from localStorage
-let sessionId = localStorage.getItem('chatbot_session_id');
-if (!sessionId) {
-  sessionId = Date.now().toString() + '-' + Math.random().toString(36).substring(2);
-  localStorage.setItem('chatbot_session_id', sessionId);
-}
 
-document.getElementById('chatbot-toggle').onclick = function () {
-  const chatbot = document.getElementById('chatbot-container');
-  const notification = document.getElementById('notification-bubble');
-  chatbot.style.display = chatbot.style.display === 'flex' ? 'none' : 'flex';
-  if (notification) notification.style.display = 'none';
+const chatBtn = document.getElementById("chatbot-btn");
+const widget = document.getElementById("chatbot-widget");
+const chatBody = document.getElementById("chat-body");
+const notification = document.getElementById("notification");
+let unread = true;
+
+chatBtn.onclick = () => {
+  const isOpen = widget.style.display === "flex";
+  widget.style.display = isOpen ? "none" : "flex";
+  if (!isOpen && unread) {
+    notification.style.display = "none";
+    unread = false;
+  }
 };
 
-document.getElementById('chatbot-input').addEventListener('keypress', function (e) {
-  if (e.key === 'Enter') {
-    const inputField = document.getElementById('chatbot-input');
-    const userMessage = inputField.value.trim();
-    if (!userMessage) return;
+function appendMessage(text, sender) {
+  const msg = document.createElement("div");
+  msg.classList.add("message", sender);
+  msg.textContent = text;
+  chatBody.appendChild(msg);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
 
-    appendMessage("user", userMessage);
-    inputField.value = "";
+async function sendMessage() {
+  const input = document.getElementById("chat-message");
+  const message = input.value.trim();
+  if (!message) return;
 
-    fetch("https://thyppa.app.n8n.cloud/webhook/27eaca79-d89d-4c15-95e2-f6e90bf6fa73", {
+  appendMessage(message, "user");
+  input.value = "";
+
+  const typing = document.createElement("div");
+  typing.classList.add("message", "bot");
+  typing.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+  chatBody.appendChild(typing);
+  chatBody.scrollTop = chatBody.scrollHeight;
+
+  const payload = {
+    email: "contact@digitalproassist.com",
+    whatsapp: "+6281234567890",
+    message: message
+  };
+
+  try {
+    const res = await fetch("https://thyppa.app.n8n.cloud/webhook/27eaca79-d89d-4c15-95e2-f6e90bf6fa73", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ 
-        message: userMessage,
-        session_id: sessionId 
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      const msg = data.reply;
-      const markdownToHTML = (text) => {
-        return text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_self" style="color:#6746E1;text-decoration:underline;">$1</a>');
-      };
-      
-      appendHTML("bot", markdownToHTML(msg));
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
     });
+
+    const data = await res.json();
+    typing.remove();
+    appendMessage(data.reply || "Merci pour votre message !", "bot");
+  } catch (error) {
+    typing.remove();
+    appendMessage("Une erreur s'est produite. Veuillez réessayer plus tard.", "bot");
+    console.error("Erreur lors de l'envoi:", error);
   }
+
+  if (widget.style.display === "none") {
+    notification.style.display = "flex";
+    unread = true;
+  }
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(() => {
+    const typing = document.createElement("div");
+    typing.classList.add("message", "bot");
+    typing.innerHTML = '<div class="typing-indicator"><span></span><span></span><span></span></div>';
+    chatBody.appendChild(typing);
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    setTimeout(() => {
+      typing.remove();
+      appendMessage("Hi, I’m your assistant. How can I help you today?", "bot");
+    }, 1300);
+  }, 600);
+
+  document.getElementById("chat-message").addEventListener("keypress", function(e) {
+    if (e.key === "Enter") sendMessage();
+  });
 });
 
-function appendMessage(sender, message) {
-  const container = document.getElementById('chatbot-messages');
-  const messageDiv = document.createElement('div');
-  messageDiv.className = sender === "bot" ? "bot-message" : "user-message";
-  messageDiv.textContent = message;
-  container.appendChild(messageDiv);
-  container.scrollTop = container.scrollHeight;
-}
-
-function appendHTML(sender, htmlContent) {
-  const container = document.getElementById('chatbot-messages');
-  const messageDiv = document.createElement('div');
-  messageDiv.className = sender === "bot" ? "bot-message" : "user-message";
-  messageDiv.innerHTML = htmlContent;
-  container.appendChild(messageDiv);
-  container.scrollTop = container.scrollHeight;
-}
+document.getElementById("chat-info").onclick = () => {
+  const contact = document.getElementById("contact-info");
+  contact.style.display = contact.style.display === "none" ? "block" : "none";
+};
