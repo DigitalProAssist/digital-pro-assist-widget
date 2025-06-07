@@ -1,0 +1,33 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Chatbot Widget</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <button id="chatbot-btn">
+    💬
+    <div id="notification">1</div>
+  </button>
+
+  <div id="chatbot-widget">
+    <div class="chat-header">
+      <span id="chat-title">DigitalProAssist</span>
+      <span id="chat-info" style="cursor:pointer;">⋯</span>
+    </div>
+    <div id="contact-info" style="display:none; padding: 8px 14px; font-size: 13px; background:#f1f1f1; color:#444;">
+      Contact us:<br>
+      📧 contact@digitalproassist.com<br>
+      📱 +6281234567890
+    </div>
+    <div class="chat-body" id="chat-body"></div>
+    <div class="chat-input">
+      <input type="text" id="chat-message" placeholder="Écrivez un message..." />
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
