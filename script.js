@@ -64,7 +64,7 @@ async function sendMessage() {
   }
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   setTimeout(() => {
     const typing = document.createElement("div");
     typing.classList.add("message", "bot");
